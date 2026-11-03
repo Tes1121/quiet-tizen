@@ -5,7 +5,9 @@ on:
     paths:
       - "launcher/**"
       - "tools/native_preflight.py"
+      - "tools/build_native_local.py"
       - "tests/test_native_preflight.py"
+      - "tests/test_native_build_local.py"
       - "docs/10-native-build-preflight.md"
       - ".github/workflows/native-readiness.yml"
   pull_request:
