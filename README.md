@@ -104,7 +104,9 @@ python3 tools/build.py payloads
 python3 tools/native_preflight.py source  # read-only, no TV required
 # After obtaining the four private Tizen reference assemblies:
 python3 tools/native_preflight.py framework --framework .local/tv-framework
-python3 tools/build.py launcher --framework .local/tv-framework
+python3 tools/build_native_local.py --dry-run --framework .local/tv-framework
+python3 tools/build_native_local.py --framework .local/tv-framework
+# Or use: python3 tools/build.py launcher --framework .local/tv-framework
 ```
 
 GitHub Actions runs the offline tests and builds the open-source access
