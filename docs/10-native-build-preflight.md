@@ -62,7 +62,19 @@ expected prerequisite, not a reason to disable the check.
 
 ## Phase 3 — local native build and offline package verification
 
-Do this only when Phase 2 passes:
+Do this only when Phase 2 passes. The recommended **one-command local build**
+runs the existing compiler, validates output, then creates `.local/package.tar.gz`:
+
+```sh
+python3 tools/build_native_local.py --dry-run --framework .local/tv-framework
+python3 tools/build_native_local.py --framework .local/tv-framework
+```
+
+The `--dry-run` command checks dependencies only; it does **not** compile,
+write files, connect to a TV, or install anything. The second command compiles
+and writes local outputs but does **not** connect to a TV.
+
+Equivalent manual commands:
 
 ```sh
 python3 tools/build.py launcher --framework .local/tv-framework
