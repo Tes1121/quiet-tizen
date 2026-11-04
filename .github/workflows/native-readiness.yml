@@ -36,6 +36,35 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Compile open-source Probe only
         run: dotnet build launcher/probe/Probe.csproj -c Release --nologo
+      - name: Assemble downloadable native build kit (not an installer)
+        run: |
+          set -euo pipefail
+          mkdir -p .local/native-build-kit/compiled
+          git archive --format=tar HEAD | tar -xf - -C .local/native-build-kit
+          cp launcher/probe/bin/Release/net6.0/Probe.dll .local/native-build-kit/compiled/Probe.dll
+          sha256sum .local/native-build-kit/compiled/Probe.dll > .local/native-build-kit/compiled/SHA256SUMS.txt
+          cat > .local/native-build-kit/BUILD-KIT-STATUS.txt <<'EOF'
+          QUIET TIZEN NATIVE BUILD KIT - NOT INSTALLABLE YET
+          This package contains repository source and a compiled Probe.dll.
+          BixbyPromotion.dll and QuickLaunch.dll are NOT included.
+          Full native build requires the FOUR TV-matched Samsung reference DLLs:
+          Tizen.NUI.dll, Tizen.Applications.Common.dll, Tizen.System.dll, Tizen.dll.
+          Follow docs/10-native-build-preflight.md on a compatible isolated build host.
+          No TPK/WGT is produced. NO TV, ROOT OR SDB OPERATIONS ARE PERFORMED.
+          EOF
+          test -s .local/native-build-kit/compiled/Probe.dll
+          test ! -e .local/native-build-kit/compiled/BixbyPromotion.dll
+          test ! -e .local/native-build-kit/compiled/QuickLaunch.dll
+          for dll in Tizen.NUI.dll Tizen.Applications.Common.dll Tizen.System.dll Tizen.dll; do
+            test ! -e ".local/native-build-kit/compiled/$dll"
+          done
+      - name: Upload native build kit ZIP (source + Probe only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: quiet-tizen-native-build-kit
+          path: .local/native-build-kit/
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload non-device readiness report only
         if: always()
         uses: actions/upload-artifact@v4
